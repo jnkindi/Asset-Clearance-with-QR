@@ -11,12 +11,12 @@
                         <div class="media">
                             <div class="media-img-wrap">
                                 <div class="avatar">
-                                    <img src="dist/img/avatar1.jpg" alt="user" class="avatar-img rounded-circle">
+                                    <img src="dist/img/avatar.jpg" alt="user" class="avatar-img rounded-circle">
                                 </div>
                                 <span class="badge badge-success badge-indicator"></span>
                             </div>
                             <div class="media-body">
-                                <span>Madelyn Shane<i class="zmdi zmdi-chevron-down"></i></span>
+                                <span><?php echo $user_names; ?><i class="zmdi zmdi-chevron-down"></i></span>
                             </div>
                         </div>
                     </a>
@@ -39,7 +39,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="new-entrant.php" >
                                 <span class="feather-icon"><i data-feather="book"></i></span>
-                                <span class="nav-link-text">New Entry</span>
+                                <span class="nav-link-text">New Entrant</span>
                             </a>
                         </li>
                         <li class="nav-item">

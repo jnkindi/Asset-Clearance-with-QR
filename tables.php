@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>OACS Data Table</title>
-    <meta name="description" content="A responsive bootstrap 4 admin dashboard template by hencework" />
+    <meta name="description" content="Asset Management system using QR" />
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="favicon.ico">

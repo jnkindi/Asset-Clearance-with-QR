@@ -12,6 +12,7 @@ if (!isset($_SESSION['logged_user_info'])) {
 		$query = $conn->query($query);
 		$arr = $query->fetch_array();
 		$user_id = $arr['id'];
+		$user_names = $arr['names'];
 		$phone = $arr['phone'];
 	} else {
     header("Location: logout.php");

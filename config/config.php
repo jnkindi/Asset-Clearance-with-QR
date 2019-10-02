@@ -8,3 +8,9 @@ $conn = new mysqli($server, $user, $pass, $db);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+function generateQR($entrantId) {
+  $appURL = "http://localhost/asset-clearance/";
+  $entrantLink = $appURL."check-entrant?entrant=".$entrantId;
+  return "https://chart.apis.google.com/chart?chs=150x150&cht=qr&chl=$entrantLink&choe=UTF-8";
+}
