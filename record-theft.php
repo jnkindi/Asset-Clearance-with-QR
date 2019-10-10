@@ -1,20 +1,34 @@
 <?php include('session.php'); ?>
 <?php
+if(isset($_GET['entrant']) && isset($_GET['asset'])) {
+  $entrant_id = $_GET['entrant'];
+  $asset_id = $_GET['asset'];
+  //
+  $query = "SELECT name FROM entrant WHERE id = '$entrant_id'";
+  $query = $conn->query($query);
+  $row = $query->fetch_array();
+  $entrant_name = $row['name'];
+  //
+  $query = "SELECT name FROM asset WHERE id = '$asset_id'";
+  $query = $conn->query($query);
+  $row = $query->fetch_array();
+  $asset_name = $row['name'];
+  //
+} else {
+  header("Location: entrants.php");
+  return;
+}
+//
 if(isset($_POST['submit']))
 {
-    $names = $_POST['names'];
-    $phone = $_POST['phone'];
-    $type = $_POST['type'];
+    $description = $_POST['description'];
+    $date = $_POST['date'];
     
-    $query = "INSERT INTO entrant(hash, name, phone, type, in_out) VALUES ('', '$names', '$phone', '$type', 'In')";
+    $query = "INSERT INTO asset_theft(entrant_id, asset_id, description, date, status) VALUES ('$entrant_id', '$asset_id', '$description', '$date', 'Pending')";
     if($conn->query($query)){
-        $entrant_id = $conn->insert_id;
-        $hash = md5($entrant_id);
-        $query = "UPDATE entrant SET hash = '$hash' WHERE id = '$entrant_id'";
-        $conn->query($query);
-        header("Location: register-entrant.php?success&hash=$hash");
+        header("Location: record-theft.php?success&entrant=$entrant_id&asset=$asset_id");
     }else {
-        header("Location: register-entrant.php?error");
+      header("Location: record-theft.php?error&entrant=$entrant_id&asset=$asset_id");
     }
 }
 ?>
@@ -23,7 +37,7 @@ if(isset($_POST['submit']))
     
 <head>
         <meta charset="utf-8" />
-        <title>Asset Clearance - Register Entrant</title>
+        <title>Asset Clearance - Register Asset Theft</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta content="Asset Clearance" name="description" />
         <meta content="UoK" name="author" />
@@ -70,9 +84,9 @@ if(isset($_POST['submit']))
                             </div>
                             <?php } ?>
                             <div class="col-sm-12">
-                              <h4 class="m-b-20 header-title"><b>Register Entrant</b></h4>
+                              <h4 class="m-b-20 header-title"><b>Register Asset Theft</b></h4>
                               <?php if(isset($_GET['success'])){ ?>
-                              <div class="alert alert-success alert-dismissable"><button type="button" data-dismiss="alert" aria-hidden="true" class="close">×</button></span><strong>Successfully!</strong> Registered New Entrant</div>
+                              <div class="alert alert-success alert-dismissable"><button type="button" data-dismiss="alert" aria-hidden="true" class="close">×</button></span><strong>Successfully!</strong> Registered New Asset Theft</div>
                               <?php } ?>
                               <?php if(isset($_GET['error'])){ ?>
                               <div class="alert alert-danger alert-dismissable"><button type="button" data-dismiss="alert" aria-hidden="true" class="close">×</button></span><strong>Oops!</strong> Something went wrong, Try again !</div>
@@ -80,22 +94,21 @@ if(isset($_POST['submit']))
                                 <div class="row">
                                     <div class="col-md-12 m-b-20">
                                         <form role="form" method="POST">
-                                            <div class="col-md-6 form-group">
-                                                <label>Names</label>
-                                                <input type="text" autocomplete="off" required class="form-control" name="names" placeholder="Names">
+                                            <div class="col-md-4 form-group">
+                                                <label>Asset Name</label>
+                                                <input type="text" value="<?php echo $asset_name; ?>" readonly class="form-control">
                                             </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>Phone Number</label>
-                                                <input type="text" autocomplete="off" required class="form-control" name="phone" placeholder="Phone Number">
+                                            <div class="col-md-4 form-group">
+                                                <label>Entrant</label>
+                                                <input type="text" value="<?php echo $entrant_name; ?>" readonly class="form-control">
                                             </div>
-                                            <div class="col-md-6 form-group">
-                                                <label>Type</label>
-                                                <select name="type" class="form-control">
-                                                  <option value="">Select Type</option>
-                                                  <option value="Student">Student</option>
-                                                  <option value="Staff">Staff</option>
-                                                  <option value="Visitor">Visitor</option>
-                                                </select>
+                                            <div class="col-md-4 form-group">
+                                                <label>DATE</label>
+                                                <input type="date" value="<?php echo Date('Y-m-d'); ?>" autocomplete="off" required class="form-control" name="date" placeholder="Date">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>Description</label>
+                                                <textarea required class="form-control" name="description" placeholder="Description"></textarea>
                                             </div>
                                             <div class="col-md-12">
                                               <br>

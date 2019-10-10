@@ -172,6 +172,7 @@ if(isset($_GET['in']))
                                               if($row['status'] == "In") {
                                               ?>
                                               <a onclick="return confirm('Are you sure you want to record asset Out?')" href="view-assets.php?id=<?php echo $entrant_id ?>&out=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-danger">Record Asset Out</a>
+                                              <a href="record-theft.php?entrant=<?php echo $entrant_id ?>&asset=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-dark pull-right">Record Asset Theft</a>
                                               <?php
                                               } else {
                                               ?>

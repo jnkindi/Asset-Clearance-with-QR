@@ -106,7 +106,8 @@ if(isset($_POST['edit']))
                                             <td>
                                               <?php echo $row['name']; ?> <br>
                                               <span style="cursor: pointer" data-toggle="modal" data-target="#edit-<?php echo $row['id'] ?>" class="badge">Edit</span>
-                                              <a href="view-assets.php?id=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-primary">View Assets </a>
+                                              <a href="register-entrant.php?hash=<?php echo $row['hash'] ?>" style="cursor: pointer" class="badge badge-dark">Generate QR </a>
+                                              <a href="view-assets.php?id=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-primary pull-right">View Assets </a>
                                             </td>
                                             <td><?php echo $row['phone']; ?></td>
                                             <td><?php echo $row['type']; ?></td>
