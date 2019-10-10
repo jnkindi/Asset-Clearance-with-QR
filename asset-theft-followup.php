@@ -1,7 +1,7 @@
 <?php include('session.php'); ?>
 <?php
 if(isset($_GET['id'])) {
-  $entrant_id = $_GET['id'];
+  $theft_id = $_GET['id'];
 } else {
   header("Location: entrants.php");
   return;
@@ -9,63 +9,26 @@ if(isset($_GET['id'])) {
 //
 if(isset($_POST['save']))
 {
-    $name = $_POST['name'];
-    $serial_number = $_POST['serial_number'];
-    $description = $_POST['description'];
-    $query = "INSERT INTO asset(name, serial_number, description) VALUES ('$name', '$serial_number', '$description');";
-    if($conn->query($query)){
-      $asset_id = $conn->insert_id;
-      $query = "INSERT INTO asset_flow(entrant_id, asset_id, status) VALUES ('$entrant_id', '$asset_id', 'In');";
-      $conn->query($query);
-      $query = "UPDATE entrant SET in_out = 'In' WHERE id = '$entrant_id'";
-      $conn->query($query);
-      header("Location: view-assets.php?id=".$entrant_id."&success");
-    }else{
-      header("Location: view-assets.php?id=".$entrant_id."&error");
-    }
+  $date = $_POST['date'];
+  $description = $_POST['description'];
+  $query = "INSERT INTO asset_theft_followup(theft_id, description, date, user_id) VALUES ('$theft_id', '$description', '$date', '$user_id');";
+  if($conn->query($query)){
+    header("Location: asset-theft-followup.php?id=".$theft_id."&success");
+  }else{
+    header("Location: asset-theft-followup.php?id=".$theft_id."&error");
+  }
 }
 if(isset($_POST['edit']))
 {
-  $name = $_POST['name'];
-  $serial_number = $_POST['serial_number'];
+  $date = $_POST['date'];
   $description = $_POST['description'];
   $id = $_POST['id'];
-  $query = "UPDATE asset SET name = '$name', serial_number = '$serial_number', description = '$description' WHERE id = '$id'";
+  $query = "UPDATE asset_theft_followup SET description = '$description', date = '$date' WHERE id = '$id'";
   if($conn->query($query)){
-    header("Location: view-assets.php?id=".$entrant_id."&success");
+    header("Location: asset-theft-followup.php?id=".$theft_id."&success");
   }else{
-    header("Location: view-assets.php?id=".$entrant_id."&error");
+    header("Location: asset-theft-followup.php?id=".$theft_id."&error");
   }
-}
-if(isset($_GET['out']))
-{
-    $id = $_GET['out'];
-    $query = "UPDATE asset_flow SET status = 'Out' WHERE asset_id = '$id'";
-    if($conn->query($query)){
-      //
-      $query = "SELECT asset.id, asset.name, asset.serial_number, asset.description, asset_flow.id as flow_id, asset_flow.entrant_id, asset_flow.datetime as date, asset_flow.status FROM asset_flow, asset WHERE asset_flow.entrant_id = '$entrant_id' AND asset_flow.asset_id = asset.id AND asset_flow.status = 'In' ORDER BY asset_flow.id DESC";
-      $query = $conn->query($query);
-      if($query->num_rows == 0) {
-        $query = "UPDATE entrant SET in_out = 'Out' WHERE id = '$entrant_id'";
-        $conn->query($query);
-      }
-      //
-      header("Location: view-assets.php?id=".$entrant_id."&success");
-    }else{
-      header("Location: view-assets.php?id=".$entrant_id."&error");
-    }
-}
-if(isset($_GET['in']))
-{
-    $id = $_GET['in'];
-    $query = "INSERT INTO asset_flow(entrant_id, asset_id, status) VALUES ('$entrant_id', '$id', 'In');";
-    if($conn->query($query)){
-      $query = "UPDATE entrant SET in_out = 'In' WHERE id = '$entrant_id'";
-      $conn->query($query);
-      header("Location: view-assets.php?id=".$entrant_id."&success");
-    }else{
-      header("Location: view-assets.php?id=".$entrant_id."&error");
-    }
 }
 ?>
 <!DOCTYPE html>
@@ -73,7 +36,7 @@ if(isset($_GET['in']))
     
 <head>
         <meta charset="utf-8" />
-        <title>Asset Clearance - Assets</title>
+        <title>Asset Clearance - Asset Theft Followup</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta content="Asset Clearance" name="description" />
         <meta content="UoK" name="author" />
@@ -122,19 +85,10 @@ if(isset($_GET['in']))
                 <!-- START PAGE CONTENT -->
                 <div id="page-right-content">
 
-                  <?php
-                  //
-                  $query = "SELECT * FROM entrant WHERE id = '$entrant_id'";
-                  $query = $conn->query($query);
-                  $row = $query->fetch_array();
-                  $entrant_name = $row['name'];
-                  //
-                  ?>
-
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-12">
-                              <h4 class="m-b-20 header-title"><b><?php echo $entrant_name; ?>'s assets</b></h4>
+                              <h4 class="m-b-20 header-title"><b>Followups</b></h4>
                               <?php if(isset($_GET['success'])){ ?>
                               <div class="alert alert-success alert-dismissable"><button type="button" data-dismiss="alert" aria-hidden="true" class="close">×</button></span><strong>Successfully!</strong> Done</div>
                               <?php } ?>
@@ -143,7 +97,7 @@ if(isset($_GET['in']))
                               <?php } ?>
                                 <div class="row">
                                   <div class="col-sm-12 text-right m-b-20">
-                                    <a class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#new">Record Asset</a>
+                                    <a class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#new">Record Followup</a>
                                   </div>
                                     <div class="col-md-12 m-b-20">
                                         <table id="datatable" class="table table-striped table-bordered" cellspacing="0"
@@ -151,58 +105,42 @@ if(isset($_GET['in']))
                                         <thead>
                                         <tr>
                                             <th>Date</th>
-                                            <th>Name</th>
-                                            <th>S/N</th>
                                             <th>Description</th>
-                                            <th>Status</th>
+                                            <th>User</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <?php
-                                        $query = "SELECT asset.id, asset.name, asset.serial_number, asset.description, asset_flow.id as flow_id, asset_flow.entrant_id, asset_flow.datetime as date, asset_flow.status FROM asset_flow, asset WHERE asset_flow.entrant_id = '$entrant_id' AND asset_flow.asset_id = asset.id ORDER BY asset_flow.id DESC";
+                                        $query = "SELECT * FROM asset_theft_followup WHERE theft_id = '$theft_id' ORDER BY id DESC";
                                         $query = $conn->query($query);
                                         while($row = $query->fetch_assoc())
                                         {
+                                          $query_user = "SELECT names FROM staff WHERE id = '".$row['user_id']."'";
+                                          $query_user = $conn->query($query_user);
+                                          $row_user = $query_user->fetch_array();
+                                          $user = $row_user['names'];
                                         ?>
                                         <tr>
                                             <td>
                                               <?php echo $row['date']; ?> <br>
-                                              <span style="cursor: pointer" data-toggle="modal" data-target="#edit-<?php echo $row['flow_id'] ?>" class="badge">Edit</span>
-                                              <?php
-                                              if($row['status'] == "In") {
-                                              ?>
-                                              <a onclick="return confirm('Are you sure you want to record asset Out?')" href="view-assets.php?id=<?php echo $entrant_id ?>&out=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-danger">Record Asset Out</a>
-                                              <a href="record-theft.php?entrant=<?php echo $entrant_id ?>&asset=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-dark pull-right">Record Asset Theft</a>
-                                              <?php
-                                              } else {
-                                              ?>
-                                              <a onclick="return confirm('Are you sure you want to record asset In?')" href="view-assets.php?id=<?php echo $entrant_id ?>&in=<?php echo $row['id'] ?>" style="cursor: pointer" class="badge badge-info">Record Asset In</a>
-                                              <?php
-                                              }
-                                              ?>
+                                              <span style="cursor: pointer" data-toggle="modal" data-target="#edit-<?php echo $row['id'] ?>" class="badge">Edit</span>
                                             </td>
-                                            <td><?php echo $row['name']; ?></td>
-                                            <td><?php echo $row['serial_number']; ?></td>
                                             <td><?php echo $row['description']; ?></td>
-                                            <td><?php echo $row['status']; ?></td>
+                                            <td><?php echo $user; ?></td>
                                         </tr>
-                                        <div id="edit-<?php echo $row['flow_id'];?>" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-contactLabel" aria-hidden="true">
+                                        <div id="edit-<?php echo $row['id'];?>" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-contactLabel" aria-hidden="true">
                                           <div class="modal-dialog">
                                               <div class="modal-content">
                                                   <div class="modal-header">
                                                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                      <h4 class="modal-title" id="add-contactLabel">Edit Asset</h4>
+                                                      <h4 class="modal-title" id="add-contactLabel">Edit Followup</h4>
                                                   </div>
                                                   <form role="form" method="POST">
                                                       <div class="modal-body" style="padding: 0px">
                                                           <div class="col-md-12 form-group">
-                                                              <label>Name</label>
+                                                              <label>Date</label>
                                                               <input type="hidden" value="<?php echo $row['id']; ?>" name="id"/>
-                                                              <input type="text" value="<?php echo $row['name']; ?>" class="form-control" placeholder="Name" name="name" required=""/>
-                                                          </div>
-                                                          <div class="col-md-12 form-group">
-                                                              <label>Serial Number</label>
-                                                              <input type="text" value="<?php echo $row['serial_number']; ?>" class="form-control" placeholder="Serial Number" name="serial_number" required=""/>
+                                                              <input type="date" value="<?php echo $row['date']; ?>" class="form-control" placeholder="Date" name="date" required=""/>
                                                           </div>
                                                           <div class="col-md-12 form-group">
                                                               <label>Description</label>
@@ -248,17 +186,13 @@ if(isset($_GET['in']))
               <div class="modal-content">
                   <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                      <h4 class="modal-title" id="add-contactLabel">Record Asset</h4>
+                      <h4 class="modal-title" id="add-contactLabel">Record Followup</h4>
                   </div>
                   <form role="form" method="POST">
                     <div class="modal-body" style="padding: 0px">
                         <div class="col-md-12 form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" placeholder="Name" name="name" required=""/>
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <label>Serial Number</label>
-                            <input type="text" class="form-control" placeholder="Serial Number" name="serial_number" required=""/>
+                            <label>Date</label>
+                            <input type="date" value="<?php echo Date('Y-m-d');?>" class="form-control" placeholder="Date" name="date" required=""/>
                         </div>
                         <div class="col-md-12 form-group">
                             <label>Description</label>
