@@ -111,7 +111,7 @@ else
                                                 <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Sign In</button>
                                             </div>
                                         </div>
-                                                <a href="forget-password.php" class="text-muted pull-right font-14">Forgot your password?</a>
+                                                <a href="followup.php" class="text-muted pull-right font-14">Lost asset followup?</a>
 
                                     </form>
 
