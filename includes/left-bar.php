@@ -22,6 +22,7 @@
                                 <li><a href="dashboard.php"><i class="ti-home"></i> Dashboard </a></li>
                                 <li><a href="register-entrant.php"><i class="ti ti-plus"></i> Register entrant </a></li>
                                 <li><a href="entrants.php"><i class="ti ti-layers"></i> Entrants </a></li>
+                                <li><a href="asset-theft.php"><i class="ti ti-list"></i> Asset Theft </a></li>
                                 <?php
                                 if($user_role == "Administrator") {
                                 ?>
